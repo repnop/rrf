@@ -1,0 +1,8 @@
+[package]
+name = "rrf"
+version = "0.1.0"
+authors = ["Noah <me@noahlesko.com>"]
+edition = "2018"
+
+[dependencies]
+quicksilver = "0.3.3"
