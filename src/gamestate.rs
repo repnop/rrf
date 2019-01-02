@@ -41,8 +41,7 @@ impl State for GameState {
 
     fn update(&mut self, _window: &mut Window) -> Result<()> {
         // handle the turn options
-        self.turn = self
-            .turn
+        self.turn
             .handle(&mut self.entities, self.terminal.terminal_size);
 
         // clear terminal

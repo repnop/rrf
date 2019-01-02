@@ -69,8 +69,8 @@ impl AsciiTerminal {
     // places specified string starting at location
     pub fn put_str(&mut self, loc: (usize, usize), ascii_str: &'static str, qs_color: Color) {
         let ascii_chars: Vec<char> = ascii_str.chars().collect();
-        for i in 0..(ascii_chars.len()) {
-            self.put_char((loc.0 + i, loc.1), ascii_chars[i], qs_color);
+        for (i, &ch) in ascii_chars.iter().enumerate() {
+            self.put_char((loc.0 + i, loc.1), ch, qs_color);
         }
     }
 

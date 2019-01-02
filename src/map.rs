@@ -17,12 +17,10 @@ pub struct Floor {
 impl Floor {
     // creates a new floor
     pub fn new(size: (usize, usize)) -> Self {
-        let mut tiles: Vec<Tile> = Vec::new();
-        for _ in 0..(size.0 * size.1) {
-            tiles.push(Tile::new(TileType::Nothing));
+        Floor {
+            size,
+            tiles: vec![Tile::new(TileType::Nothing); size.0 * size.1],
         }
-
-        Floor { size, tiles }
     }
 
     // generates a test floor
@@ -31,9 +29,7 @@ impl Floor {
         for x in 0..8 {
             for y in 0..8 {
                 self[(x + offset.0 - 4, y + offset.1 - 4)] = Tile::new(TileType::Ground);
-                if x == 0 || x == 7 {
-                    self[(x + offset.0 - 4, y + offset.1 - 4)] = Tile::new(TileType::Wall);
-                } else if y == 0 || y == 7 {
+                if (x == 0 || x == 7) || (y == 0 || y == 7) {
                     self[(x + offset.0 - 4, y + offset.1 - 4)] = Tile::new(TileType::Wall);
                 }
             }
@@ -57,7 +53,7 @@ impl Floor {
 }
 
 // single tile on the floor
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Tile {
     pub tile_type: TileType,
     pub blocking: bool,
@@ -68,8 +64,7 @@ impl Tile {
     pub fn new(tile_type: TileType) -> Self {
         let blocking: bool = match tile_type {
             TileType::Wall => true,
-            TileType::Ground => false,
-            TileType::Nothing => false,
+            _ => false,
         };
 
         Tile {
@@ -80,7 +75,7 @@ impl Tile {
 }
 
 // represents all types of tiles
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum TileType {
     Wall,
     Ground,

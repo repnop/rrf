@@ -2,7 +2,7 @@ use crate::terminal::AsciiTerminal;
 use quicksilver::graphics::Color;
 
 // represents a set of entities
-#[derive(Debug)]
+#[derive(Debug, Default, Clone)]
 pub struct Entities {
     pub entities: Vec<Entity>,
 }
@@ -10,8 +10,7 @@ pub struct Entities {
 impl Entities {
     // initializs the entities vec
     pub fn init() -> Self {
-        let entities: Vec<Entity> = Vec::new();
-        Entities { entities }
+        Self::default()
     }
 
     // creates the player ent
@@ -33,7 +32,7 @@ impl Entities {
 }
 
 // represents an entity in the game world
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Entity {
     pub name: String,
     pub ascii_char: char,
