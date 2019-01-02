@@ -1,15 +1,12 @@
 // namespacing
-use quicksilver::geom::Rectangle;
-use quicksilver::geom::Shape;
-use quicksilver::graphics::Background::Img;
-use quicksilver::graphics::Color;
-use quicksilver::graphics::Image;
-use quicksilver::lifecycle::Asset;
-use quicksilver::lifecycle::Window;
+use quicksilver::{
+    geom::Rectangle,
+    graphics::{Background::Img, Color, Image},
+    lifecycle::{Asset, Window},
+};
 
 // const
 const ASCII_SHEET_DIM: (usize, usize) = (32, 7);
-const BASKETBALL_AMERICAN: Color = Color::BLACK;
 
 // an ascii terminal to represent the game
 pub struct AsciiTerminal {
@@ -45,7 +42,7 @@ impl AsciiTerminal {
         let mut char_buffer: Vec<CharColor> = Vec::new();
         for _ in 0..(terminal_size.0 * terminal_size.1) {
             char_buffer.push(CharColor {
-                ascii_character: '*',
+                ascii_character: ' ',
                 qs_color: Color::BLACK,
             });
         }
@@ -72,7 +69,7 @@ impl AsciiTerminal {
     // places specified string starting at location
     pub fn put_str(&mut self, loc: (usize, usize), ascii_str: &'static str, qs_color: Color) {
         let ascii_chars: Vec<char> = ascii_str.chars().collect();
-        for i in 0..(ascii_chars.len() - 1) {
+        for i in 0..(ascii_chars.len()) {
             self.put_char((loc.0 + i, loc.1), ascii_chars[i], qs_color);
         }
     }
@@ -94,17 +91,18 @@ impl AsciiTerminal {
         for x in 0..self.terminal_size.0 {
             for y in 0..self.terminal_size.1 {
                 let cc = self[(x, y)];
-                let font_size = self.font_size;
+                let font_size = (self.font_size.0 as f32, self.font_size.1 as f32);
 
                 let _ = self.font_image.execute(|img| {
                     window.draw(
-                        &img.subimage(Rectangle::new(
-                            char_to_coord(cc.ascii_character),
-                            (font_size.0 as f32, font_size.1 as f32),
-                        ))
-                        .area()
-                        .with_center(((x * font_size.0) as f32, (y * font_size.1) as f32)),
-                        Img(&img),
+                        &Rectangle::new(
+                            (x as f32 * font_size.0 - 1 as f32, y as f32 * font_size.1),
+                            font_size,
+                        ),
+                        Img(&img.subimage(Rectangle::new(
+                            char_to_coord(cc.ascii_character, font_size),
+                            font_size,
+                        ))),
                     );
                     Ok(())
                 });
@@ -114,10 +112,11 @@ impl AsciiTerminal {
 }
 
 // figures a coord on an ascii sheet given the char
-fn char_to_coord(ascii_character: char) -> (f32, f32) {
+fn char_to_coord(ascii_character: char, size: (f32, f32)) -> (f32, f32) {
+    let ascii_character = ascii_character as usize - 32;
     (
-        (ascii_character as usize / ASCII_SHEET_DIM.0) as f32,
-        (ascii_character as usize % ASCII_SHEET_DIM.0) as f32,
+        (ascii_character % ASCII_SHEET_DIM.0) as f32 * size.0,
+        (ascii_character / ASCII_SHEET_DIM.0) as f32 * size.1,
     )
 }
 
